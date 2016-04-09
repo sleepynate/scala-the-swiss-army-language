@@ -1,0 +1,80 @@
+| \*\gScala: The Swiss Army Language
+
+| \bwith Nathan Dotz
+
+
+
+:bird:   \ctwitter:  @nathandotz
+:octopus:   \mgithub:   @sleepynate
+:sparkling_heart:   \yemployer: @DetroitLabs
+---
+| \*\gI'm sure you did the prerequisites, but...
+
+For that person who definitely isn't you that didn't install scala before coming:
+Go to \chttp://www.scala-sbt.org/download.html\s and follow the instructions
+
+- Mac?
+> \ybrew install sbt \sor \yport install sbt
+
+- Windows?
+> Get the native \y.msi installer
+
+- Linux?
+> Repos available for \yaptitude\s and \yyum\s
+
+- Manual?
+> Download the \y.zip\s and execute \ybin/sbt\s or \ybin/sbt.sh\s
+---
+| \*\gDoes it work?
+
+1) type \ysbt console\s at your terminal (or \ybin/sbt console\s if manually installed)
+2) type \yscala\s at your terminal
+
+If you see something like the following, you're in business!
+
+
+\!Welcome to Scala 2.11.8 (Java HotSpot(TM) 64-Bit Server VM, Java 1.8.0_74).\s\k|
+\!Type in expressions for evaluation. Or try :help.                          \s\k|
+\!                                                                           \s\k|
+\!scala>                                                                     \s\k|
+
+For those of you who haven't gotten it working, check out
+\chttps://codebunk.com\s, which provides an online REPL.
+---
+| \*\gNow that that's out of the way
+
+
+\cLet's talk about this talk:
+
+- Explore Scala, not libraries
+
+- No demo website, no sample game
+
+- Hours of hands-on Scala experience
+
+- Get you comfortable with the patterns of "idiomatic" Scala
+
+
+\rCaveats:
+
+- 3 hours of typing
+---
+| \*\gWhy Scala?
+
+
+--
+- \yFamiliarity:
+  You \*could\s write Scala much like Java, but that would be a waste
+
+--
+- \yCrazy-powerful collections API
+
+--
+- \yBetter types
+  Less defensive programming
+
+--
+- \yFunctional programming
+  Less state = happier brains
+
+---
