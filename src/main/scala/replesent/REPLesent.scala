@@ -26,10 +26,10 @@ case class REPLesent(
   import scala.util.Try
 
   private case class Config(
-    top: String = "*"
-  , bottom: String = "*"
-  , sinistral: String = "* "
-  , dextral: String = " *"
+    top: String = "-"
+  , bottom: String = "-"
+  , sinistral: String = "| "
+  , dextral: String = " |"
   , newline: String = System.lineSeparator
   , whiteSpace: String = " "
   , private val width: Int
@@ -77,7 +77,7 @@ case class REPLesent(
 
   private val config = Config(width = width, height = height)
 
-  private case class Line(content: String, length: Int, private val style: Line.Style) {
+  private case class Line(content: String, length: Int, style: Line.Style) {
     override def toString: String = content
     def isEmpty: Boolean = content.isEmpty
     def render(margin: Int): String = style(this, margin)
@@ -86,7 +86,7 @@ case class REPLesent(
   private object Line {
     import scala.io.AnsiColor._
 
-    protected sealed trait Style {
+    sealed trait Style {
       import config.whiteSpace
 
       protected def horizontalSpace = config.horizontalSpace
@@ -281,7 +281,13 @@ case class REPLesent(
   // `size` and `maxLength` refer to the dimensions of the slide's last build
   private case class Build(content: IndexedSeq[Line], size: Int, maxLength: Int, footer: Line)
 
-  private case class Slide(content: IndexedSeq[Line], builds: IndexedSeq[Int], code: IndexedSeq[String]) {
+  sealed abstract class SlideCode
+
+  case class ListOfCodeblocks(blocks: IndexedSeq[Codeblock]) extends SlideCode
+
+  case class Codeblock(lines: IndexedSeq[String], executeTogether: Boolean = true) extends SlideCode
+
+  private case class Slide(content: IndexedSeq[Line], builds: IndexedSeq[Int], code: IndexedSeq[Codeblock]) {
     private val maxLength = content.maxBy(_.length).length
 
     def lastBuild: Int = builds.size - 1
@@ -290,6 +296,8 @@ case class REPLesent(
   }
 
   private case class Deck(slides: IndexedSeq[Slide]) {
+    import config.newline
+
     private var slideCursor = -1
     private var buildCursor = 0
 
@@ -340,14 +348,22 @@ case class REPLesent(
     def lastBuild: Option[Build] = jumpTo(slides.size) orElse previousBuild
 
     def runCode: Unit = {
-      val code = currentSlide.code(buildCursor)
+      val code: Codeblock = currentSlide.code(buildCursor)
 
       if (repl.isEmpty) {
         Console.err.print(s"No reference to REPL found. Please call with parameter intp=$$intp")
-      } else if (code.isEmpty) {
+      } else if (code.lines.isEmpty) {
         Console.err.print("No code for you")
       } else {
-        repl foreach (_.interpret(code))
+        repl foreach { r =>
+          if(code.executeTogether) {
+            r.interpret(code.lines.mkString(newline))
+          } else {
+            code.lines.foreach{ c =>
+              r.interpret(c)
+            }
+          }
+        }
       }
     }
   }
@@ -431,8 +447,8 @@ case class REPLesent(
       content: IndexedSeq[Line] = IndexedSeq.empty
     , builds: IndexedSeq[Int] = IndexedSeq.empty
     , deck: IndexedSeq[Slide] = IndexedSeq.empty
-    , code: IndexedSeq[String] = IndexedSeq.empty
-    , codeAcc: IndexedSeq[String] = IndexedSeq.empty
+    , code: IndexedSeq[SlideCode] = IndexedSeq.empty
+    , codeAcc: IndexedSeq[SlideCode] = IndexedSeq.empty
     , parser: Parser = LineParser
     ) {
       import config.newline
@@ -440,15 +456,19 @@ case class REPLesent(
       def switchParser: Acc = copy(parser = parser.switch)
 
       def append(line: String): Acc = {
-        val (l, c) = parser(line)
-        copy(content = content :+ l, codeAcc = c.fold(codeAcc)(codeAcc :+ _))
+        val (l: Line, c: Option[String]) = parser(line)
+        val fold: IndexedSeq[String] = c.fold(codeAcc)(codeAcc :+ _)
+        copy(content = content :+ l, codeAcc = fold)
       }
 
-      def pushBuild: Acc = copy(
-        builds = builds :+ content.size
-      , code = code :+ codeAcc.mkString(newline)
-      , codeAcc = IndexedSeq.empty
-      )
+      def pushBuild: Acc = {
+        println(codeAcc.mkString(newline) + "\n" + "---")
+        copy(
+          builds = builds :+ content.size
+          , code = code :+ Codeblock(codeAcc)
+          , codeAcc = IndexedSeq.empty
+        )
+      }
 
       def pushSlide: Acc = {
         if (content.isEmpty) {
@@ -466,14 +486,31 @@ case class REPLesent(
     val buildSeparator = "--"
     val codeDelimiter = "```"
 
-    val acc = (Acc() /: input) { (acc, line) =>
-      line match {
-        case `slideSeparator` => acc.pushSlide
-        case `buildSeparator` => acc.pushBuild
-        case `codeDelimiter` => acc.switchParser
-        case _ => acc.append(line)
-      }
-    }.pushSlide
+    def pushOrSwitch: (Acc, String) => Acc = {
+      (acc, line) =>
+        if(line matches ".*```.*```.*") {
+          val split: Array[String] = line.split("```")
+          val a: (Line, Option[String]) = LineParser.apply(split(0))
+          val b: (Line, Option[String]) = CodeParser.apply(split(1))
+          val l = Line(a._1.content + b._1.content, a._1.length + b._1.length, a._1.style)
+          val code1: IndexedSeq[String] = b._2.fold(acc.codeAcc) { (x: String) =>
+            acc.codeAcc :+ x
+          })
+          acc.copy(content = acc.content :+ l,
+                   builds = acc.builds,
+                   deck = acc.deck,
+                   code = acc.code,
+                   codeAcc = code1,
+                   parser = acc.parser)
+        } else
+          line match {
+            case `slideSeparator` => acc.pushSlide
+            case `buildSeparator` => acc.pushBuild
+            case `codeDelimiter` => acc.switchParser
+            case _ => acc.append(line)
+          }
+    }
+    val acc = (Acc() /: input) { pushOrSwitch }.pushSlide
 
     acc.deck
   }

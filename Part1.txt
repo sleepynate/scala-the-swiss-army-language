@@ -78,3 +78,30 @@ For those of you who haven't gotten it working, check out
   Less state = happier brains
 
 ---
+| \*\gThe Stack
+
+- \yJVM
+  Ubiquitous - possibly the most-used platform ever.
+
+- \yScala
+  Compiler, runtime, REPL, and library
+
+- \ysbt
+  Build tool and package manager
+---
+| \*\gLet's get started.
+---
+scala> ```5 + 82```
+res0: Int = 87
+
+scala> ```37 * 18```
+res1: Int = 666
+
+scala> ```3293 - 3721```
+res2: Int = -428
+
+scala> ```7 / 3```
+res3: Int = 2
+
+scala> ```7 / 3.0```
+res4: Double = 2.3333333333333335
