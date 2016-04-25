@@ -91,6 +91,8 @@ For those of you who haven't gotten it working, check out
 ---
 | \*\gLet's get started.
 ---
+| \*\gMath works like you'd expect
+
 scala> ```5 + 82```
 res0: Int = 87
 
@@ -105,3 +107,635 @@ res3: Int = 2
 
 scala> ```7 / 3.0```
 res4: Double = 2.3333333333333335
+---
+| \*\gAs does boolean logic
+
+scala> ```true && true```
+res0: Boolean = true
+
+scala> ```false && true```
+res1: Boolean = false
+
+scala> ```true || false```
+res2: Boolean = true
+
+scala> ```!false```
+res3: Boolean = true
+
+scala> ```!(true && true || false)```
+res4: Boolean = false
+---
+| \*\gEquality uses == and !=
+
+scala> ```1 == 2```
+res5: Boolean = false
+
+scala> ```3 == 3```
+res6: Boolean = true
+
+scala> ```7 != 9```
+res7: Boolean = true
+
+scala> ```0 != 0```
+res8: Boolean = false
+---
+| \*\gBut improvements have been made
+
+scala> ```"Scala" == "Scala"```
+res9: Boolean = true
+
+scala> ```"Scala" == "Crappy"```
+res10: Boolean = false
+
+scala> ```"Scala" != "Crappy"```
+res11: Boolean = true
+---
+scala> ```"Scala" == 7```
+res12: Boolean = false
+
+scala> "7" == 7
+res13: Boolean = false
+
+scala> '7' == 7
+res14: Boolean = false
+
+scala> "Scala" == 'Scala
+res14: Boolean = false
+
+Heck yea, type inference.
+---
+| \*\gFunctions are objects!
+
+scala> ```5.==(6)```
+res0: Boolean = false
+
+scala> ```5.== 6```
+res1: Boolean = false
+
+scala> ```5 == 6```
+res2: Boolean = false
+
+Methods are not special. Operators are not special.
+Everything is an object, and syntactic sugar makes
+everything feel like home.
+---
+| \*\gAssigning & defining
+---
+scala> ```val a = 5```
+a: Int = 5
+
+scala> ```var b = 6```
+b: Int = 6
+
+scala> ```def c = 7```
+c: Int
+
+scala> ```:type a```
+Int
+
+scala> ```:type b```
+Int
+
+scala> ```:type c```
+Int
+---
+scala> ```a + b```
+res0: Int = 11
+
+scala> ```a + c```
+res1: Int = 12
+
+scala> ```def d = a + b```
+d: Int
+
+scala> ```d```
+res2: Int = 11
+
+scala> ```b = 1278312```
+b: Int = 1278312
+
+scala> ```d```
+res3: Int = 1278317
+---
+| \*\gUsing code from files
+
+Let's make a file to load code from!
+
+Put the following in a file:
+```
+def addOne(x:Int):Int = x + 1
+```
+--
+Now we can load it with \c:load\s
+
+```
+:load funky.scala
+```
+Loading funky.scala...
+addOne: (x: Int)Int
+
+scala> ```addOne(3)```
+res0: Int = 4
+---
+| \*\gBack on track… remember functions are just objects
+
+scala> ```val addAnotherOne = (x:Int) => x + 1```
+addAnotherOne: Int => Int = <function1>
+
+scala> ```addAnotherOne(4)```
+res1: Int = 5
+--
+
+This can get confusing though…
+
+scala> ```def addWeirdOne = (x:Int) => x + 1```
+addWeirdOne: Int => Int
+
+scala> ```addWeirdOne(5)```
+res2: Int = 6
+---
+| \*\gOf course, we could move the type signatures
+
+scala> ```val addHardToTypeOne:(Int => Int) = x => x + 1```
+addHardToTypeOne: Int => Int = <function1>
+
+scala> ```def hardToTypeMethod:(Int => Int) = addHardToTypeOne```
+hardToTypeMethod: Int => Int
+
+As you can see, these all work in much the same way in practice.
+
+scala> ```addHardToTypeOne(6)```
+res3: Int = 7
+
+scala> ```hardToTypeMethod(7)```
+res4: Int = 8
+---
+| \*\gRefactoring "real" code
+
+If now instead of adding one we wanted to double a number
+we could add the following function to \rfunky.scala\s
+
+```
+def twiceTheFun(x:Int):Int = x + x
+```
+--
+
+And load it again with \r:l\s
+
+scala> ```:l funky.scala```
+Loading funky.scala...
+addOne: (x: Int)Int
+twiceTheFun: (x: Int)Int
+
+scala> ```twiceTheFun(8)```
+res0: Int = 16
+
+scala> ```twiceTheFun(9)```
+res1: Int = 18
+---
+| \*\gRefactoring
+
+Let's add another function to \rfunky.scala\s:
+
+```def sumOf(x:Int, y:Int):Int = x + y```
+
+So we can no refactor the existing functions:
+
+```
+def addOne(x:Int):Int = sumOf(x,1)
+
+def twiceTheFun(x:Int):Int = sumOf(x,x)
+```
+---
+scala> ```:l funky.scala```
+Loading funky.scala...
+addOne: (x: Int)Int
+twiceTheFun: (x: Int)Int
+sumOf: (x: Int, y: Int)Int
+
+scala> ```addOne(5)```
+res2: Int = 6
+
+scala> ```twiceTheFun(8)```
+res3: Int = 16
+
+scala> ```sumOf(5, 8)```
+res4: Int = 13
+--
+
+scala> def ```someDoublyFun(x:Int,y:Int) = sumOf(twiceTheFun x, twiceTheFun y)```
+someDoublyFun: (x: Int, y: Int)Int
+
+scala> ```someDoublyFun(5,8)```
+res5: Int = 26
+---
+| \*\gConditionals
+
+scala> ```if (1 > 0) 5```
+res0: AnyVal = 5
+
+scala> ```if (1 > 0) 5 else 10```
+res1: Int = 5
+
+
+
+Note how type inference is working here
+---
+| \*\gA practical conditional - The Collatz Conjecture
+
+Let's add the following to \rfunky.scala\s
+
+```
+def nextCollatz(i:Int) = {
+  if (i % 2 == 0) i / 2
+  else 3 * i + 1
+}
+```
+
+We can see type inference at work
+---
+scala> ```:l funky.scala```
+Loading funky.scala...
+nextCollatz: (i: Int)Int
+
+scala> ```nextCollatz(13)```
+res0: Int = 40
+
+scala> ```nextCollatz(40)```
+res1: Int = 20
+
+scala> ```nextCollatz(20)```
+res2: Int = 10
+
+scala> ```nextCollatz(10)```
+res3: Int = 5
+---
+scala> ```nextCollatz(5)```
+res4: Int = 16
+
+scala> ```nextCollatz(16)```
+res5: Int = 8
+
+scala> ```nextCollatz(8)```
+res6: Int = 4
+
+scala> ```nextCollatz(4)```
+res7: Int = 2
+
+scala> ```nextCollatz(2)```
+res8: Int = 1
+---
+| \*\gLists
+
+scala> ```List(1,2,3)```
+res0: List[Int] = List(1, 2, 3)
+
+scala> ```List("Galactus", "Mephisto", "Doom", "The Stranger")```
+res1: List[String] = List(Galactus, Mephisto, Doom, The Stranger)
+
+scala> ```List()```
+res2: List[Nothing] = List()
+
+scala> ```List(1, "derp")```
+res3: List[Any] = List(1, derp)
+---
+| \*\gMaking Lists bigger
+
+scala> ```List(1, 2, 3) ++ List(4, 5)```
+res4: List[Int] = List(1, 2, 3,``` 4, 5)
+
+scala> ```1 :: List(2)```
+res5: List[Int] = ```List(1, 2)```
+
+scala> ```1 :: 2```
+<console>:8: error: value :: is not a member of Int
+              1 :: 2
+---
+| \*\gThe empty List - Nil
+
+scala> ```Nil```
+res7: scala.collection.immutable.Nil.type = List()
+
+scala> ```List()```
+res8: List[Nothing] = ```List()```
+
+The Scala source code sheds some light on exactly what ```Nil is```
+
+\ccase object Nil extends List[Nothing] { //…\s
+---
+scala> ```1 :: 2 :: 3 :: 4 :: Nil```
+res10: List[Int] = List(1, 2, 3, 4)
+
+scala> ```1 :: 2 :: 3 :: List(4)```
+res11: List[Int] = List(1, 2, 3, 4)
+
+scala> ```1 :: 2 :: List(3, 4)```
+res12: List[Int] = List(1, 2, 3, 4)
+
+scala> ```1 :: List(2, 3, 4)```
+res13: List[Int] = List(1, 2, 3, 4)
+---
+| \*\gWhat does the List do?
+
+scala> ```val l = List(1,2,3)```
+l: List[Int] = List(1, 2, 3)
+
+scala> ```l(1)```
+res1: Int = 2
+
+scala> ```l.apply(1)```
+res2: Int = 2
+
+scala> ```l.apply(3)```
+java.lang.IndexOutOfBoundsException: 3
+\/\/ …
+---
+| \*\gLists are handy
+
+scala> ```l.head```
+res3: Int = 1
+
+scala> ```l.tail```
+res4: List[Int] = List(2, 3)
+
+scala> ```l.last```
+res5: Int = 3
+
+scala> ```l.init```
+res6: List[Int] = List(1, 2)
+
+scala> ```List().head```
+java.util.NoSuchElementException: head of empty list
+\/\/ …
+
+scala> ```List().tail```
+java.lang.UnsupportedOperationException: tail of empty list
+\/\/ …
+---
+scala> ```l.length```
+res9: Int = 3
+
+scala> ```l.size```
+res10: Int = 3
+
+scala> ```l.isEmpty```
+res11: Boolean = false
+
+scala> ```List().isEmpty```
+res12: Boolean = true
+---
+So this
+
+scala> ```if (l.length >= 1) l.head```
+res13: AnyVal = 1
+But what we probably want is really:
+
+Should probably be
+
+scala> ```if (!l.isEmpty) l.head```
+res14: AnyVal = 1
+
+Or even
+
+scala> ```if (l.nonEmpty) l.head```
+res15: AnyVal = 1
+---
+scala> ```l.take(1)```
+res16: List[Int] = List(1)
+
+scala> ```l.take(3)```
+res17: List[Int] = List(1, 2, 3)
+
+scala> ```l.take(2)```
+res18: List[Int] = List(1, 2)
+
+scala> ```l.take(4)```
+res19: List[Int] = List(1, 2, 3)
+
+scala> ```List().take(1)```
+res20: List[Nothing] = List()
+---
+scala> ```List(1, 2, 3, 4, 5, 6, 7, 8, 9, 10).drop(2)```
+res21: List[Int] = List(3, 4, 5, 6, 7, 8, 9, 10)
+
+scala> ```List(1, 2, 3, 4, 5, 6, 7, 8, 9, 10).drop(8)```
+res22: List[Int] = List(9, 10)
+
+scala> ```List().drop(9001)```
+res23: List[Nothing] = List()
+
+scala> ```List(1,2,3).reverse```
+res24: List[Int] = List(3, 2, 1)
+---
+scala> ```List(1,2,3).max```
+res25: Int = 3
+
+scala> ```List(1,2,3).min```j
+res26: Int = 1
+
+scala> ```List("jane", "kid koala", "bob").min```j
+res27: String = bob
+
+scala> ```List("jane", "kid koala", "bob").max```
+res28: String = kid koala
+
+scala> ```List("jane", "kid koala", "bob").sorted```
+res29: List[String] = List(bob, jane, kid koala)
+---
+scala> ```List(1, 4, 6, 2, 6, 7.0).sum```
+res30: Double = 26.0
+
+scala> ```List(1, 4, 6, 2, 6, 7.0).product```
+res31: Double = 2016.0
+
+scala> ```List("janet", "brad", "frank", "magenta").sum```
+<console>:8: error: could not find implicit value for parameter num: Numeric[String]
+              List("janet", "brad", "frank", "magenta").sum
+                                                        ^
+
+scala> ```List("janet", "brad", "frank", "magenta").product```
+<console>:8: error: could not find implicit value for parameter num: Numeric[String]
+              List("janet", "brad", "frank", "magenta").product
+---
+| \*\gRanges
+
+scala> ```1 until 10```
+res0: scala.collection.immutable.Range = Range(1, 2, 3, 4, 5, 6, 7, 8, 9)
+
+scala> ```(1 to 10).max```
+res2: Int = 10
+
+scala> ```('a' until 'm').min```
+res3: Char = a
+
+scala> ```(5 to 20 by 5).sum```
+res4: Int = 50
+---
+| \*\gComprehensions
+
+scala> ```2 to 10 by 2```
+res0: scala.collection.immutable.Range = Range(2, 4, 6, 8, 10)
+
+scala> ```(2 to 5000 by 2).take(5)```
+res1: scala.collection.immutable.Range = Range(2, 4, 6, 8, 10)
+
+These could be expressed as a comprehension if our range
+was originally 1 to 5
+
+scala> ```for (x <- 1 to 5) yield x * 2```
+res2: scala.collection.immutable.IndexedSeq[Int] = Vector(2, 4, 6, 8, 10)
+---
+| \*\gBreaking down comprehensions
+
+for \k\R(\Yx <- \G-10 to 10\R if (x > 5 || x < -5))\s \Byield x * 2\s
+
+\rEnumerator
+\yBinding
+\gGenerator
+\bYield
+---
+scala> ```for (x <- -10 to 10 if (x > 5 || x < -5)) yield x * 2```
+res3: IndexedSeq[Int] = Vector(-20, -18, -16, -14, -12, 12, 14, \/\/…)
+
+scala> ```for (x <- 1 to 3; y <- 5 to 15 by 5) yield y + x```
+res12: IndexedSeq[Int] = Vector(6, 11, 16, 7, 12, 17, 8, 13, 18)
+
+scala> ```for (x<-1 to 3; y<-5 to 15 by 5; if((x+y)%2==0)) yield y + x```
+res14: IndexedSeq[Int] = Vector(6, 16, 12, 8, 18)
+---
+| \*\gTuples
+
+scala> ```(1, "two")```
+res0: (Int, String) = (1,two)
+
+scala> ```List(1, "two")```
+res1: List[Any] = List(1, two)
+
+
+scala> ```('a', 4, "woohoo!", 'b)```
+res2: (Char, Int, String, Symbol) = (a,4,woohoo!,'b)
+
+```
+(List('a', 'b', 'c'), "easy as", List(1, 2, 3),
+       "simple as", List("do", "re", "mi"), 'abc, 123)
+```
+res3: (List[Char], String, List[Int],
+       String, List[String], Symbol, Int) = \/\/…
+---
+scala> ```(1, "two")._1```
+res4: Int = 1
+
+scala> ```(1, "two")._2```
+res5: String = two
+---
+case class Tuple22[+T1, +T2, +T3, +T4, +T5, +T6, +T7, +T8, +T9,
+                   +T10, +T11, +T12, +T13, +T14, +T15, +T16, +T17,
+                   +T18, +T19, +T20, +T21, +T22]
+                   (_1: T1, _2: T2, _3: T3, _4: T4, _5: T5, _6: T6,
+                    _7: T7, _8: T8, _9: T9, _10: T10, _11: T11,
+                    _12: T12, _13: T13, _14: T14, _15: T15,
+                    _16: T16, _17: T17, _18: T18, _19: T19,
+                    _20: T20, _21: T21, _22: T22)
+                    extends Product22[T1, T2, T3, T4, T5, T6, T7,
+                                      T8, T9, T10, T11, T12, T13,
+                                      T14, T15, T16, T17, T18, T19,
+                                      T20, T21, T22]
+                    with Product with Serializable
+---
+scala> ```List(1,2,3,4,5,6).zip(List("a", "b", "c", "d"))```
+res6: List[(Int, String)] = List((1,a), (2,b), (3,c), (4,d))
+---
+| \*\gA practical example
+
+Let's tie together Lists and for comprehensions and
+tuples to do something useful before we wrap up Part 1
+---
+| \*\gPerimeters of right triangles
+
+
+```
+def allTriangles(a:Int) =
+    for(x <- 1 to a;
+        y <- 1 to a;
+        z <- 1 to a) yield (x, y, z)
+```
+---
+| \*\gPerimeters of right triangles
+
+
+```
+def rightTriangles(a:Int) =
+    for(x <- 1 to a;
+        y <- 1 to a;
+        z <- 1 to a;
+        if (Math.pow(x,2) + Math.pow(y,2) == Math.pow(z,2)))
+    yield (x, y, z)
+
+
+rightTriangles(5)
+```
+---
+| \*\gPerimeters of right triangles
+
+
+```
+def rightTriangles(a:Int) =
+    for(z <- 1 to a;
+        y <- 1 to z;
+        x <- 1 to y;
+        if (Math.pow(x,2) + Math.pow(y,2) == Math.pow(z,2)))
+    yield (x, y, z)
+
+
+rightTriangles(5)
+```
+---
+| \*\gPerimeters of right triangles
+
+
+```
+def rightTriangles(a:Int, b:Int) =
+    for(z <- 1 to a;
+        y <- 1 to z;
+        x <- 1 to y;
+        if (Math.pow(x,2) + Math.pow(y,2) == Math.pow(z,2));
+        if (x + y + z) == b)
+    yield (x, y, z)
+
+
+rightTriangles(5, 12)
+
+rightTriangles(5, 10)
+```
+---
+| \*\gPerimeters of right triangles
+
+
+scala> ```rightTriangles(50, 24)```
+res4: IndexedSeq[(Int, Int, Int)] = Vector((6,8,10))
+
+scala> ```rightTriangles(50, 30)```j
+res5: IndexedSeq[(Int, Int, Int)] = Vector((5,12,13))
+
+scala> ```rightTriangles(50, 44)```
+res6: IndexedSeq[(Int, Int, Int)] = Vector()
+
+scala> ```rightTriangles(50, 40)```
+res7: IndexedSeq[(Int, Int, Int)] = Vector((8,15,17))
+---
+Just for fun, let's figure out the inner angles
+using some Trigonometry
+
+
+```
+rightTriangles(5, 12) map { t =>
+    (180 * Math.acos(t._2/5.0) / Math.PI,
+     180 * Math.acos(t._1/5.0) / Math.PI)
+    }
+```
+---
+| \*\gEnd of Part 1!
+
+/ :pineapple:  :raised_hands:
+| :sweat_smile:  Go take a break, you deserve it! :sweat_smile:
+/ :rainbow:  :sparkling_heart:
