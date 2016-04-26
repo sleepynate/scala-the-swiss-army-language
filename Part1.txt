@@ -169,7 +169,7 @@ Heck yea, type inference.
 scala> ```5.==(6)```
 res0: Boolean = false
 
-scala> ```5.== 6```
+scala> ```5 ==(6)```
 res1: Boolean = false
 
 scala> ```5 == 6```
@@ -228,9 +228,8 @@ def addOne(x:Int):Int = x + 1
 --
 Now we can load it with \c:load\s
 
-```
 :load funky.scala
-```
+
 Loading funky.scala...
 addOne: (x: Int)Int
 
@@ -282,7 +281,7 @@ def twiceTheFun(x:Int):Int = x + x
 
 And load it again with \r:l\s
 
-scala> ```:l funky.scala```
+scala> :l funky.scala
 Loading funky.scala...
 addOne: (x: Int)Int
 twiceTheFun: (x: Int)Int
@@ -297,7 +296,9 @@ res1: Int = 18
 
 Let's add another function to \rfunky.scala\s:
 
-```def sumOf(x:Int, y:Int):Int = x + y```
+```
+def sumOf(x:Int, y:Int):Int = x + y
+```
 
 So we can no refactor the existing functions:
 
@@ -307,7 +308,7 @@ def addOne(x:Int):Int = sumOf(x,1)
 def twiceTheFun(x:Int):Int = sumOf(x,x)
 ```
 ---
-scala> ```:l funky.scala```
+scala> :l funky.scala
 Loading funky.scala...
 addOne: (x: Int)Int
 twiceTheFun: (x: Int)Int
@@ -323,7 +324,7 @@ scala> ```sumOf(5, 8)```
 res4: Int = 13
 --
 
-scala> def ```someDoublyFun(x:Int,y:Int) = sumOf(twiceTheFun x, twiceTheFun y)```
+scala> ```def someDoublyFun(x:Int,y:Int) = sumOf(twiceTheFun(x), twiceTheFun(y))```
 someDoublyFun: (x: Int, y: Int)Int
 
 scala> ```someDoublyFun(5,8)```
@@ -354,7 +355,7 @@ def nextCollatz(i:Int) = {
 
 We can see type inference at work
 ---
-scala> ```:l funky.scala```
+scala> :l funky.scala
 Loading funky.scala...
 nextCollatz: (i: Int)Int
 
@@ -417,9 +418,9 @@ scala> ```Nil```
 res7: scala.collection.immutable.Nil.type = List()
 
 scala> ```List()```
-res8: List[Nothing] = ```List()```
+res8: List[Nothing] = List()
 
-The Scala source code sheds some light on exactly what ```Nil is```
+The Scala source code sheds some light on exactly what Nil is
 
 \ccase object Nil extends List[Nothing] { //…\s
 ---
@@ -448,7 +449,7 @@ res2: Int = 2
 
 scala> ```l.apply(3)```
 java.lang.IndexOutOfBoundsException: 3
-\/\/ …
+ // …
 ---
 | \*\gLists are handy
 
@@ -466,11 +467,11 @@ res6: List[Int] = List(1, 2)
 
 scala> ```List().head```
 java.util.NoSuchElementException: head of empty list
-\/\/ …
+ // …
 
 scala> ```List().tail```
 java.lang.UnsupportedOperationException: tail of empty list
-\/\/ …
+ // …
 ---
 scala> ```l.length```
 res9: Int = 3
@@ -488,7 +489,6 @@ So this
 
 scala> ```if (l.length >= 1) l.head```
 res13: AnyVal = 1
-But what we probably want is really:
 
 Should probably be
 
@@ -530,10 +530,10 @@ res24: List[Int] = List(3, 2, 1)
 scala> ```List(1,2,3).max```
 res25: Int = 3
 
-scala> ```List(1,2,3).min```j
+scala> ```List(1,2,3).min```
 res26: Int = 1
 
-scala> ```List("jane", "kid koala", "bob").min```j
+scala> ```List("jane", "kid koala", "bob").min```
 res27: String = bob
 
 scala> ```List("jane", "kid koala", "bob").max```
@@ -595,7 +595,7 @@ for \k\R(\Yx <- \G-10 to 10\R if (x > 5 || x < -5))\s \Byield x * 2\s
 \bYield
 ---
 scala> ```for (x <- -10 to 10 if (x > 5 || x < -5)) yield x * 2```
-res3: IndexedSeq[Int] = Vector(-20, -18, -16, -14, -12, 12, 14, \/\/…)
+res3: IndexedSeq[Int] = Vector(-20, -18, -16, -14, -12, 12, 14, //…)
 
 scala> ```for (x <- 1 to 3; y <- 5 to 15 by 5) yield y + x```
 res12: IndexedSeq[Int] = Vector(6, 11, 16, 7, 12, 17, 8, 13, 18)
@@ -620,7 +620,7 @@ res2: (Char, Int, String, Symbol) = (a,4,woohoo!,'b)
        "simple as", List("do", "re", "mi"), 'abc, 123)
 ```
 res3: (List[Char], String, List[Int],
-       String, List[String], Symbol, Int) = \/\/…
+       String, List[String], Symbol, Int) = //…
 ---
 scala> ```(1, "two")._1```
 res4: Int = 1
@@ -704,7 +704,9 @@ def rightTriangles(a:Int, b:Int) =
 
 
 rightTriangles(5, 12)
+```
 
+```
 rightTriangles(5, 10)
 ```
 ---
@@ -736,6 +738,6 @@ rightTriangles(5, 12) map { t =>
 ---
 | \*\gEnd of Part 1!
 
-/ :pineapple:  :raised_hands:
+/ :pineapple:  :raised_hands: \s
 | :sweat_smile:  Go take a break, you deserve it! :sweat_smile:
-/ :rainbow:  :sparkling_heart:
+/ :rainbow:  :sparkling_heart: \s
