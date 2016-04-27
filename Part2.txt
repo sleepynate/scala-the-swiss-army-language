@@ -1,0 +1,356 @@
+| \*\gScala: The Swiss Army Language
+
+| \bwith Nathan Dotz
+
+
+
+:bird:   \ctwitter:  @nathandotz
+:octopus:   \mgithub:   @sleepynate
+:sparkling_heart:   \yemployer: @DetroitLabs
+---
+| \*\gPart 2: Types, and Patterns
+---
+| \*\gScala is type-safe (mostly)
+
+scala> ```var a = 5```
+a: Int = 5
+
+scala> ```a = "i think it's going to break"```
+<console>:8: error: type mismatch;
+ found   : String("i think it\'s going to break")
+ required: Int
+       a = "i think it's going to break"
+           ^
+---
+| \*\gType inference
+
+scala> ```var b = 5.0```
+b: Double = 5.0
+
+scala> ```var d = '5'```
+d: Char = 5
+
+scala> ```var e = true```
+e: Boolean = true
+
+scala> ```var f = null```
+f: Null = null
+
+scala> ```var g = List('x, 'y, 'z)```
+g: List[Symbol] = List('x, 'y, 'z)
+---
+scala> ```var h = List('x, 'y', 'z)```
+h: List[Any] = List('x, y, 'z)
+
+scala> ```h.head < h(1)```
+<console>:9: error: value < is not a member of Any
+              h.head < h(1)
+                     ^
+
+Usually it's good but sometimes it can trip you up
+---
+| \*\gType Annotations and Declarations
+
+scala> ```val x = 1```
+x: Int = 1
+
+scala> :t x
+Int
+
+
+The REPL shows us the type we've declared with an \yannotation
+---
+| \*\gType Annotations and Declarations
+
+scala> ```val addAnotherOne = (x:Int) => x + 1```
+addAnotherOne: Int => Int = <function1>
+
+
+We've seen the type of lambdas too
+and the fat arrow tells us it's a function
+---
+| \*\gType Annotations and Declarations
+
+scala> ```def revMe(s: String) = s.reverse```
+revMe: (s: String)String
+
+scala> ```def thereAndBack(t: String, b: String) = t + b.reverse```
+thereAndBack: (t: String, b: String)String
+
+
+Methods just have the return type appended
+---
+| \*\gType Annotations and Declarations
+
+scala> ```def foo(f: Int => String => Boolean => Double) = f.apply(5)```
+foo: (f: Int => (String => (Boolean => Double)))String => (Boolean => Double)
+
+
+Can you read this one yet?
+---
+| \*\gAscripting type annotations
+
+scala> ```val poo:String = "the bear, of course!"```
+poo: String = the bear, of course!
+--
+
+scala> ```val poo:Any = "the bear, of course!"```
+poo: Any = the bear, of course!
+
+
+scala> ```poo.reverse```
+<console>:9: error: value reverse is not a member of Any
+              poo.reverse
+                  ^
+---
+| \*\gType parameters
+
+scala> ```val a = List(1, 2, 3)```
+a: List[Int] = List(1, 2, 3)
+
+--
+scala> ```(1 to 5).toList```
+res5: List[Int] = List(1, 2, 3, 4, 5)
+
+scala> ```Set('a', 'b', 'c').toList```
+res6: List[Char] = List(a, b, c)
+---
+| \*\gType parameters
+
+scala> ```def gimmeThreeOf[A](x: A):List[A] = List(x, x, x)```
+gimmeThreeOf: [A](x: A)List[A]
+
+scala> ```gimmeThreeOf(5)```
+res7: List[Int] = List(5, 5, 5)
+
+scala> ```gimmeThreeOf('r')```
+res8: List[Char] = List(r, r, r)
+---
+| \*\gPattern Matching
+---
+| \*\gPattern Matching
+
+```
+def magicNumber(n: Int) = n match {
+    case 3 => "IT'S THE MAGIC NUMBER!"
+    case _ => "just an ordinary number"
+}
+```
+
+magicNumber: (n: Int)String
+--
+
+scala> ```magicNumber(4)```
+res0: String = just an ordinary number
+
+scala> ```magicNumber(5)```
+res1: String = just an ordinary number
+
+scala> ```magicNumber(3)```
+res2: String = IT'S THE MAGIC NUMBER!
+---
+| \*\gPattern Matching
+
+```
+def failMatch(a: Any) = a match {
+    case _:Int => "int!"
+}
+```
+
+failMatch: (a: Any)String
+
+scala> ```failMatch(1)```
+res3: String = int!
+
+scala> ```failMatch(5.5)```
+scala.MatchError: 5.5 (of class java.lang.Double)
+ // …
+---
+| \*\gPattern Matching
+
+```
+def magicNumber(n: Int) = n match {
+    case 3 => "IT'S THE MAGIC NUMBER!"
+    case x => x + " is just an ordinary number"
+}
+```
+
+magicNumber: (n: Int)String
+
+scala> ```magicNumber(3)```
+res5: String = IT'S THE MAGIC NUMBER!
+
+scala> ```magicNumber(436782)```
+res6: String = 436782 is just an ordinary number
+---
+| \*\gPattern Matching
+
+```
+def triangular(n: Int):Int = n match {
+         case 1 => 1
+         case x => x + triangular(x - 1)
+}
+```
+
+triangular: (n: Int)Int
+
+--
+scala> ```triangular(10)```
+res0: Int = 55
+
+scala> ```triangular(32843)```
+res1: Int = 539347746
+---
+| \*\gDecomposition
+
+```
+("first", "second") match {
+    case (f, s) => f + " is first and next comes " + s
+}
+```
+
+We can decompose types to extract their parts
+---
+| \*\gDecomposition
+
+```
+def vectorAdd(first: (Int, Int), second: (Int, Int)) =
+    (first._1 + second._1, first._2 + second._2)
+```
+
+vectorAdd: (first: (Int, Int), second: (Int, Int))(Int, Int)
+
+--
+
+scala> ```vectorAdd((3,0), (1,4))```
+res0: (Int, Int) = (4,4)
+---
+| \*\gDecomposition
+
+```
+def vectorAdd(first: (Int, Int), second: (Int, Int)) =
+    (first, second) match {
+        case ((x1, y1), (x2, y2)) => (x1+x2, y1+y2)
+    }
+```
+
+vectorAdd: (first: (Int, Int), second: (Int, Int))(Int, Int)
+--
+
+scala>  ```vectorAdd((3,0), (1,4))```
+res1: (Int, Int) = (4,4)
+---
+| \*\gDecomposition
+
+```
+def head[A](l:List[A]) = l match {
+  case Nil => throw new Exception("Oops!")
+  case h :: _ => h
+}
+```
+
+scala> ```head(List(1,2,3))```
+res7: Int = 1
+
+We can also decompose on many constructors!
+---
+| \*\gDecomposition
+
+scala> ```val tuples = List((1, 2), (3, 4), (5, 6))```
+res3: List[(Int, Int)] = List((1,2), (3,4), (5,6))
+
+scala> ```for ((x,y) <- tuples) yield x+y```
+res4: List[Int] = List(3, 7, 11)
+---
+| \*\gDecomposition and aliases
+
+```
+(1, "hurray!") match {
+    case w@(i:Int, s:String) => w + " is made of a " +
+                                    i + " and a " + s
+}
+```
+
+res0: String = (1,hurray!) is made of a 1 and a hurray!
+---
+| \*\gGuards
+
+```
+def mySteps(steps:Int) =
+    if (steps < 2500) "you aren't even trying"
+    else if (steps < 5000) "that is pitiful"
+    else if (steps < 7500) "ok but still walk more"
+    else "hey you walked. good for you."
+```
+
+This method for our FatBot personal pedometer can
+be refactored to use \ymatch\s's guard statements.
+---
+| \*\gGuards
+
+```
+def mySteps(steps:Int) = steps match {
+    case s if (s < 2500) => "you aren't even trying"
+    case s if (s < 5000) => "that is pitiful"
+    case s if (s < 7500) => "ok but still walk more"
+    case _ => "hey you walked. good for you."
+}
+```
+
+This doesn't look like much of an
+improvement if our data is a simple
+Int, but what if it's more complicated
+---
+| \*\gGuards
+
+```
+def mySteps(t:(String, Int)) =
+    if(t._1 == "fatbot" && t._2 < 2500) "you aren't even trying"
+    else if(t._1 == "fatbot" && t._2 < 5000) "that is pitiful"
+    else if(t._1 == "fatbot" && t._2 < 7500) "ok but still walk more"
+    else if(t._1 == "fatbot") "hey you walked. good for you."
+    else "What the heck is a " + t._1 + "?"
+```
+
+If we needed to verify the device name as
+well, the code gets a little messier.
+---
+| \*\gGuards
+
+```
+def mySteps(t:(String, Int)) = {
+  val device: String = t._1
+  if (device == "fatbot") {
+    val steps: Int = t._2
+    if (steps < 2500) "you aren't even trying"
+    else if (steps < 5000) "that is pitiful"
+    else if (steps < 7500) "ok but still walk more"
+    else "hey you walked. good for you."
+  }
+  else "What the heck is a " + device + "?"
+}
+```
+
+Or maybe you'd try to get a little fancier with it.
+---
+| \*\gGuards
+
+```
+def mySteps(t:(String, Int)) = t match {
+    case ("fatbot", s) if (s < 2500) => "you aren't even trying"
+    case ("fatbot", s) if (s < 5000) => "that is pitiful"
+    case ("fatbot", s) if (s < 7500) => "ok but still walk more"
+    case ("fatbot", _) => "hey you walked. good for you."
+    case (d, _) => "What the heck is an " + d + "?"
+}
+```
+
+A combination of guards and decomposition make this
+look lovely and easy again.
+
+---
+| \*\gEnd of Part 2!
+
+/ :monkey_face:  :pizza: \s
+| :tired_face:  Go take a break, you deserve it! :tired_face:
+/ :stuck_out_tongue_closed_eyes:  :two_hearts: \s

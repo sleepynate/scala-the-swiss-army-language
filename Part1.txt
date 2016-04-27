@@ -59,6 +59,8 @@ For those of you who haven't gotten it working, check out
 
 - 3 hours of typing
 ---
+| \*\g Part 1: A Tour
+---
 | \*\gWhy Scala?
 
 
@@ -190,13 +192,13 @@ b: Int = 6
 scala> ```def c = 7```
 c: Int
 
-scala> ```:type a```
+scala> :type a
 Int
 
-scala> ```:type b```
+scala> :type b
 Int
 
-scala> ```:type c```
+scala> :type c
 Int
 ---
 scala> ```a + b```
