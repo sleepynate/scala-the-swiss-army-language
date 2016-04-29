@@ -1,0 +1,495 @@
+| \*\gScala: The Swiss Army Language
+
+| \bwith Nathan Dotz
+
+
+
+:bird:   \ctwitter:  @nathandotz
+:octopus:   \mgithub:   @sleepynate
+:sparkling_heart:   \yemployer: @DetroitLabs
+---
+| \*\gPart 4: Objects and Types… finally
+---
+| \*\gObject oriented programming
+
+| It's finally time to talk about object oriented programming.
+---
+| \*\gClasses
+
+```
+class Foo {
+  val dingus = "wingle wangle"
+  def exclaimDingus = dingus + "!"
+}
+```
+--
+
+scala> ```val foo = new Foo```
+foo: derp.Foo = derp.Foo@3651d7b4
+
+scala> ```foo.dingus```
+res0: String = wingle wangle
+
+scala> ```foo.exclaimDingus```
+res1: String = wingle wangle!
+---
+| \*\gClasses
+
+scala> derp.Foo.dingus
+<console>:9: error: object Foo is not a member of package derp
+Note: class Foo exists, but it has no companion object.
+              derp.Foo.dingus
+                   ^
+
+scala> derp.Foo.exclaimDingus
+<console>:9: error: object Foo is not a member of package derp
+Note: class Foo exists, but it has no companion object.
+              derp.Foo.exclaimDingus
+                   ^
+---
+| \*\gClasses
+
+```
+class Foo(val dingus:String) {
+  def exclaimDingus = dingus + "!"
+}
+```
+
+scala> ```val foo1 = new Foo("wingle")```
+foo1: derp.Foo = derp.Foo@76a11b29
+
+scala> ```val foo2 = new Foo("wangle")```
+foo2: derp.Foo = derp.Foo@92260b5
+
+scala> ```foo1.exclaimDingus + " " + foo2.exclaimDingus```
+res0: String = wingle! wangle!
+---
+| \*\gClasses
+
+```
+class Foo(val dingus:String, val punc: String, val howExcited:Int) {
+  def this(dingus:String) = this(dingus, "!", 1)
+  def this(dingus:String, punc:String) = this(dingus, punc, 1)
+  def exclaimDingus = dingus + punc * howExcited
+}
+```
+
+scala> ```val foo = new Foo("yay")```
+res0: derp.Foo = derp.Foo@3881bb1
+
+scala> ```foo.exclaimDingus```
+res1: String = yay!
+
+scala> ```new Foo("f yea scala!", "?!", 4).exclaimDingus```
+res3: String = f yea scala!?!?!?!?!
+---
+| \*\gCase Classes
+
+scala> ```case class Person(first:String, last:String)```
+defined class Person
+
+scala> ```val p1 = new Person("nathan", "dotz")```
+res0: Person = Person(nathan,dotz)
+
+scala> ```val p2 = Person("martin", "odersky")```
+res1: Person = Person(martin,odersky)
+
+scala> ```p1 == p2```
+res3: Boolean = false
+
+scala> ```p2 match {case Person("martin", _)=>println("found a marty!")}```
+found a marty!
+---
+| \*\gObjects
+
+scala> ```object Ooble { def plop(s:String) = "*"+s+"*" }```
+defined object Ooble
+
+scala> ```Ooble.plop("boop")```
+res0: String = *boop*
+
+scala> ```new Ooble()```
+<console>:12: error: not found: type Ooble
+       new Ooble()
+---
+| \*\gCompanion Objects
+
+```
+class Digboogy(val i: Int, val s: String) {
+    override def toString = "Digboody("+i+","+s+")"
+}
+object Digboogy {
+    private var digboogyCount = 0
+    def moar = {
+        digboogyCount = digboogyCount + 1
+        new Digboogy(digboogyCount, "I number "+digboogyCount)
+    }
+}
+```
+---
+| \*\gCompanion Objects
+
+scala> ```Digboogy.moar```
+res4: Digboogy = Digboody(1,I number 1)
+
+scala> ```Digboogy.moar```
+res5: Digboogy = Digboody(2,I number 2)
+
+scala> ```Digboogy.moar```
+res6: Digboogy = Digboody(3,I number 3)
+
+scala> ```Digboogy.moar```
+res7: Digboogy = Digboody(4,I number 4)
+
+scala> ```Digboogy.moar```
+res8: Digboogy = Digboody(5,I number 5)
+---
+| \*\gTraits
+
+scala> ```trait PrintsItself { def print = println(this) }```
+defined trait PrintsItself
+
+scala> ```class Foo extends PrintsItself```
+defined class Foo
+
+scala> ```val f = new Foo```
+f: Foo = Foo@782ed8df
+
+scala> ```f.print```
+$line4.$read$$iw$$iw$Foo@782ed8df
+---
+| \*\gTraits
+
+scala> ```class Bar extends Foo```
+defined class Bar
+
+scala> ```val b = new Bar```
+b: Bar = Bar@1cad8848
+
+scala> ```b.print```
+$line7.$read$$iw$$iw$Bar@1cad8848
+
+scala> ```val o = new Object with PrintsItself```
+res7: PrintsItself = $anon$1@2b46950c
+
+scala> ```o.print```
+$line15.$read$$iw$$iw$$anon$1@2b46950c
+---
+| \*\gTypes
+
+Scala's type system is among the most powerful
+in mainstream programming languages today.
+
+--
+Does your current programming language let you
+define a new boolean type?
+---
+| \*\gTypes
+
+```
+sealed abstract trait Bouillon
+case object True extends Bouillon
+case object False extends Bouillon
+
+def bap(b: Bouillon) = b match {
+  case True => "You're right!"
+  case False => "Incorrect"
+}
+```
+
+scala> ```bap(True)```
+res0: String = You're right!
+
+scala> ```bap(False)```
+res1: String = Incorrect
+---
+| \*\gTypes
+
+```
+sealed abstract trait Bouillon {
+    def ==(that: Bouillon): Bouillon
+    def unary_! : Bouillon
+    def &&(that: => Bouillon): Bouillon
+    def ||(that: => Bouillon): Bouillon
+}
+```
+---
+| \*\gTypes
+
+```
+case object True extends Bouillon {
+    override def ==(that: Bouillon): Bouillon = this match {
+        case True => True
+        case _ => False}
+    override def unary_! : Bouillon = False
+    override def &&(that: => Bouillon): Bouillon = that
+    override def ||(that: => Bouillon): Bouillon = this
+}
+```
+---
+| \*\gTypes
+
+```
+case object False extends Bouillon {
+    override def ==(that: Bouillon): Bouillon = this match {
+        case False => True
+        case _ => True
+    }
+    override def unary_! : Bouillon = True
+    override def &&(that: => Bouillon): Bouillon = this
+    override def ||(that: => Bouillon): Bouillon = that
+}
+```
+---
+| \*\gTypes
+
+scala> ```False == True```
+res0: Bouillon = True
+
+scala> ```False == !True```
+res1: Bouillon = True
+
+scala> ```(!False && !False) || (False || True || True && False)```
+res2: Bouillon = True
+---
+| \*\gParameterized Types
+
+```
+object Option {
+  def apply[A](x: A): Option[A] = if (x == null) None else Some(x)
+}
+sealed abstract class Option[+A] {
+  def get: A
+}
+final case class Some[+A](x: A) extends Option[A] {
+  def get = x
+}
+case object None extends Option[Nothing] {
+  def get = throw new NoSuchElementException("None.get")
+}
+```
+---
+| \*\gParameterized Types
+
+scala> ```val x = Option(5)```
+x: Option[Int] = Some(5)
+
+scala> ```val y = Option(7)```
+y: Option[Int] = Some(7)
+
+scala> ```val n = Option(null)```
+n: Option[Null] = None
+
+scala> ```x.get```
+res0: Int = 5
+
+scala> ```n.get```
+java.util.NoSuchElementException: None.get
+---
+| \*\gParameterized Types
+
+```
+def sumSomes(a: Option[Int], b: Option[Int]) = (a, b) match {
+  case (Some(x), Some(y)) => x + y
+  case _ => 0
+}
+```
+
+scala> ```sumSomes(x, y)```
+res4: Int = 12
+
+scala> ```sumSomes(x, n)```
+<console>:12: error: type mismatch;
+ found   : Option[Null]
+ required: Option[Int]
+              sumSomes(x, n)
+                          ^
+---
+| \*\gParameterized Types
+
+scala> ```List[Int]().head * 2```
+java.util.NoSuchElementException: head of empty list
+--
+
+scala> ```List(2).map(_ * 2)```
+res1: List[Int] = List(4)
+
+scala> ```List[Int]().map(_ * 2)```
+res2: List[Int] = List()
+---
+| \*\gParameterized Types
+
+scala> None.map((x:Int) => x * 2)
+res5: Option[Int] = None
+
+scala> Option(2).map((x:Int) => x * 2)
+res6: Option[Int] = Some(4)
+
+scala> Option(2).map(_ * 2).map(_ + 3).map(_ toString).map(_ + "!!"))
+res7: Option[String] = Some(7!!!!)
+
+scala> None.map(_ * 2).map(_ + 3).map(_ toString).map(_ + "!!")
+res8: Option[String] = None
+---
+| \*\gCovariance
+
+scala> ```1 :: 2 :: 3 :: 4 :: Nil```
+res10: List[Int] = List(1, 2, 3, 4)
+
+scala> ```Nil```
+res0: scala.collection.immutable.Nil.type = List()
+
+scala> ```4 :: Nil```
+res1: List[Int] = List(4)
+---
+| \*\gCovariance
+
+```
+sealed trait List[+A]
+case object Nil extends List[Nothing]
+case class Cons[+A](head: A, tail: List[A]) extends List[A]
+```
+---
+| \*\gCovariance
+
+```
+sealed trait Lyst[+A] {
+  def ::[A](that: A) = Cawns(that, this)
+}
+case object Nihil extends Lyst[Nothing]
+case class Cawns[+A](head: A, tail: Lyst[A]) extends Lyst[A]
+```
+---
+| \*\gCovariance
+
+scala> ```val l1 = Cawns(5, Nihil)```
+l1: Cawns[Int] = Cawns(5,Nihil)
+
+scala> ```val l2 = Cawns(4, l1)```
+l2: Cawns[Int] = Cawns(4,Cawns(5,Nihil))
+
+scala> ```val l3 = Cawns(3, l2)```
+l3: Cawns[Int] = Cawns(3,Cawns(4,Cawns(5,Nihil)))
+--
+
+scala> ```val l4 = 2 :: l3```
+l4: Cawns[Any] = Cawns(2,Cawns(3,Cawns(4,Cawns(5,Nihil))))
+
+scala> ```0 :: 1 :: l4```
+res4: Cawns[Any] =
+    Cawns(0,Cawns(1,Cawns(2,Cawns(3,Cawns(4,Cawns(5,Nihil))))))
+---
+| \*\gType Boundaries
+
+```
+sealed trait Lyst[+A] {
+  def ::[B >: A](that: B):Lyst[B] = Cawns(that, this)
+}
+case object Nihil extends Lyst[Nothing]
+case class Cawns[+A](head: A, tail: Lyst[A]) extends Lyst[A]
+```
+
+scala> ```val l5 = "fun" :: Nihil```
+l5: Lyst[String] = Cawns(fun,Nihil)
+
+scala> ```val l6 = "scala" :: "is" :: l5```
+l6: Lyst[String] = Cawns(scala,Cawns(is,Cawns(fun,Nihil)))
+
+scala> ```val l7 = 5 :: l6```
+l7: Lyst[Any] = Cawns(5,Cawns(scala,Cawns(is,Cawns(fun,Nihil))))
+---
+| \*\gImplicit conversions
+
+\yImplicit conversions\s let us tell Scala that it can
+convert between types with the use of functions defined
+as \cimplicit\s if it will resolve a type inference.
+---
+| \*\gImplicit conversions
+
+scala> ```val a: Int = "3719"```
+<console>:7: error: type mismatch;
+ found   : String("3719")
+ required: Int
+       val a: Int = "3719"
+                    ^
+--
+scala> ```implicit def makeStringsInts(s: String) = s.toInt```
+makeStringsInts: (s: String)Int
+
+scala> ```val a: Int = "3719"```
+a: Int = 3719
+---
+| \*\gThe Type Class Pattern
+
+```
+trait Mathy[A] {
+    def add(x: A, y: A): A
+    def subtract(x: A, y: A): A
+    def multiply(x: A, y: A): A
+    def divide(x: A, y: A): A
+}
+```
+
+We could make a series of classes extend this trait.
+However, there's another way to provide implementations
+for this trait without introducing any tight coupling
+to the classes we want it to operate on.
+---
+| \*\gThe Type Class Pattern
+
+```
+object JustMathyThings {
+    trait Mathy[A] {
+        def add(x: A, y: A): A
+        def subtract(x: A, y: A): A
+        def multiply(x: A, y: A): A
+        def divide(x: A, y: A): A
+    }
+    implicit object MathyDoubles extends Mathy[Double] {
+        override def
+          add(x: Double, y: Double): Double = x + y
+        override def
+          subtract(x: Double, y: Double): Double = add(x, -y)
+        override def
+          multiply(x: Double, y: Double): Double = x * y
+        override def
+          divide(x: Double, y: Double): Double = multiply(x, 1 / y)
+    }
+}
+```
+---
+| \*\gThe Type Class Pattern
+
+scala> ```import JustMathyThings.Mathy```
+import JustMathyThings.Mathy
+
+scala> ```def doTheAddings[T](x: T, y: T)(implicit m: Mathy[T]) = m.add(x, y)```
+doTheAddings: [T](x: T, y: T)(implicit m: mathy.JustMathyThings.Mathy[T])T
+
+scala> ```println(doTheAddings(5.0, 2.0))```
+7.0
+---
+```
+implicit object MathyStrings extends Mathy[String] {
+    override def
+      add(x: String, y: String): String = x + y
+    override def
+      divide(x: String, y: String): String = x.splitAt(y.length)._1
+    override def
+      multiply(x: String, y: String): String = x * y.length
+    override def
+      subtract(x: String, y: String): String = x.splitAt(y.length)._2
+}
+```
+--
+
+scala> ```doTheAddings("five", "two point oh")```
+res8: String = fivetwo point oh
+
+
+---
+| \*\gEnd of Part 4!
+
+/ :tulip:  :smile: \s
+| :relieved:  Go take a break, you deserve it! :relieved:
+/ :hamster:  :doughnut: \s
