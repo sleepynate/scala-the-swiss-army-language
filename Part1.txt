@@ -405,7 +405,7 @@ res3: List[Any] = List(1, derp)
 | \*\gMaking Lists bigger
 
 scala> ```List(1, 2, 3) ++ List(4, 5)```
-res4: List[Int] = List(1, 2, 3,``` 4, 5)
+res4: List[Int] = List(1, 2, 3, 4, 5)
 
 scala> ```1 :: List(2)```
 res5: List[Int] = ```List(1, 2)```
@@ -718,7 +718,7 @@ rightTriangles(5, 10)
 scala> ```rightTriangles(50, 24)```
 res4: IndexedSeq[(Int, Int, Int)] = Vector((6,8,10))
 
-scala> ```rightTriangles(50, 30)```j
+scala> ```rightTriangles(50, 30)```
 res5: IndexedSeq[(Int, Int, Int)] = Vector((5,12,13))
 
 scala> ```rightTriangles(50, 44)```
