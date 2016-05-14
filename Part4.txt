@@ -218,9 +218,10 @@ sealed abstract trait Bouillon {
 
 ```
 case object True extends Bouillon {
-    override def ==(that: Bouillon): Bouillon = this match {
+    override def ==(that: Bouillon): Bouillon = that match {
         case True => True
-        case _ => False}
+        case _ => False
+    }
     override def unary_! : Bouillon = False
     override def &&(that: => Bouillon): Bouillon = that
     override def ||(that: => Bouillon): Bouillon = this
@@ -231,9 +232,9 @@ case object True extends Bouillon {
 
 ```
 case object False extends Bouillon {
-    override def ==(that: Bouillon): Bouillon = this match {
+    override def ==(that: Bouillon): Bouillon = that match {
         case False => True
-        case _ => True
+        case _ => False
     }
     override def unary_! : Bouillon = True
     override def &&(that: => Bouillon): Bouillon = this
@@ -446,14 +447,10 @@ object JustMathyThings {
         def divide(x: A, y: A): A
     }
     implicit object MathyDoubles extends Mathy[Double] {
-        override def
-          add(x: Double, y: Double): Double = x + y
-        override def
-          subtract(x: Double, y: Double): Double = add(x, -y)
-        override def
-          multiply(x: Double, y: Double): Double = x * y
-        override def
-          divide(x: Double, y: Double): Double = multiply(x, 1 / y)
+        override def add(x:Double, y:Double):Double = x + y
+        override def subtract(x:Double, y:Double):Double = add(x, -y)
+        override def multiply(x:Double, y:Double):Double = x * y
+        override def divide(x:Double, y:Double):Double = multiply(x, 1 / y)
     }
 }
 ```
@@ -471,14 +468,10 @@ scala> ```println(doTheAddings(5.0, 2.0))```
 ---
 ```
 implicit object MathyStrings extends Mathy[String] {
-    override def
-      add(x: String, y: String): String = x + y
-    override def
-      divide(x: String, y: String): String = x.splitAt(y.length)._1
-    override def
-      multiply(x: String, y: String): String = x * y.length
-    override def
-      subtract(x: String, y: String): String = x.splitAt(y.length)._2
+    override def add(x:String, y:String):String = x + y
+    override def divide(x:String, y:String):String = x.splitAt(y.length)._1
+    override def multiply(x:String, y:String):String = x * y.length
+    override def subtract(x:String, y:String):String = x.splitAt(y.length)._2
 }
 ```
 --
@@ -491,5 +484,5 @@ res8: String = fivetwo point oh
 | \*\gEnd of Part 4!
 
 / :tulip:  :smile: \s
-| :relieved:  Go take a break, you deserve it! :relieved:
+| :relieved:  You're all done! Let's eat! :relieved:
 / :hamster:  :doughnut: \s
