@@ -337,7 +337,7 @@ def zipWith2[A,B,C](l:List[A], r:List[B])(f: (A, B) => C):List[C] =
     (l, r) match {
         case (Nil, _) => Nil
         case (_, Nil) => Nil
-        case (t :: ts, m :: ms) => f(t, m) :: zipWith(ts, ms)(f)
+        case (t :: ts, m :: ms) => f(t, m) :: zipWith2(ts, ms)(f)
     }
 ```
 ---
