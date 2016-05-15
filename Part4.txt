@@ -306,7 +306,7 @@ scala> ```sumSomes(x, n)```
               sumSomes(x, n)
                           ^
 ---
-| \*\gParameterized Types
+| \*\gWhy define Option?
 
 scala> ```List[Int]().head * 2```
 java.util.NoSuchElementException: head of empty list
@@ -318,7 +318,7 @@ res1: List[Int] = List(4)
 scala> ```List[Int]().map(_ * 2)```
 res2: List[Int] = List()
 ---
-| \*\gParameterized Types
+| \*\gWhy define Option?
 
 scala> None.map((x:Int) => x * 2)
 res5: Option[Int] = None
@@ -334,6 +334,38 @@ res8: Option[String] = None
 ---
 | \*\gCovariance
 
+So what's up with the \c[+A]\s in \csealed abstract class Option[+A]\s?
+
+In Java, \cArrayList<Cat>\s doesn't extend \cArrayList<Animal>\s
+
+\c[+A]\s means "\cA\s or any of its subtypes"
+
+Covariance in \cA\s means \cOption[Cat]\s extends \cOption[Animal]\s
+---
+| \*\gWhy do we need Covariance?
+
+If we defined \cOption\s like this:
+
+```
+sealed abstract class Option[A] {
+    def get: A
+}
+```
+--
+
+We would get a compile error like this:
+
+Error:(5, 53) type mismatch;
+ found   : None.type
+ required: Option[A]
+Note: Nothing <: A (and None.type <: Option[Nothing]),
+but class Option is invariant in type A.
+You may wish to define A as +A instead. (SLS 4.5)
+    def apply[A](x: A): Option[A] = if (x == null) None else Some(x)
+                                                    ^
+---
+| \*\gRecursive Types
+
 scala> ```1 :: 2 :: 3 :: 4 :: Nil```
 res10: List[Int] = List(1, 2, 3, 4)
 
@@ -343,7 +375,7 @@ res0: scala.collection.immutable.Nil.type = List()
 scala> ```4 :: Nil```
 res1: List[Int] = List(4)
 ---
-| \*\gCovariance
+| \*\gRecursive Types
 
 ```
 sealed trait List[+A]
@@ -351,7 +383,7 @@ case object Nil extends List[Nothing]
 case class Cons[+A](head: A, tail: List[A]) extends List[A]
 ```
 ---
-| \*\gCovariance
+| \*\gRecursive Types
 
 ```
 sealed trait Lyst[+A] {
@@ -361,7 +393,7 @@ case object Nihil extends Lyst[Nothing]
 case class Cawns[+A](head: A, tail: Lyst[A]) extends Lyst[A]
 ```
 ---
-| \*\gCovariance
+| \*\gRecursive Types
 
 scala> ```val l1 = Cawns(5, Nihil)```
 l1: Cawns[Int] = Cawns(5,Nihil)
