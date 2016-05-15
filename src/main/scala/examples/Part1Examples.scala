@@ -56,16 +56,16 @@ object Part1Examples {
     hardToTypeMethod(7)
   }
   def asbtractingMethods(): Unit = {
-    def twiceTheFun(x:Int):Int = x + x
-    twiceTheFun(8)
-    twiceTheFun(9)
+    def twiceTheFun1(x:Int):Int = x + x
+    twiceTheFun1(8)
+    twiceTheFun1(9)
     def sumOf(x:Int, y:Int):Int = x + y
     def addOne(x:Int):Int = sumOf(x,1)
-    def twiceTheFun(x:Int):Int = sumOf(x,x)
+    def twiceTheFun2(x:Int):Int = sumOf(x,x)
     addOne(5)
-    twiceTheFun(8)
+    twiceTheFun2(8)
     sumOf(5, 8)
-    def someDoublyFun(x:Int,y:Int) = sumOf(twiceTheFun(x), twiceTheFun(y))
+    def someDoublyFun(x:Int,y:Int) = sumOf(twiceTheFun2(x), twiceTheFun2(y))
     someDoublyFun(5,8)
   }
   def conditionalsAreStandard(): Unit = {
