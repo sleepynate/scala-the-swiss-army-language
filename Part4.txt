@@ -326,7 +326,7 @@ res5: Option[Int] = None
 scala> Option(2).map((x:Int) => x * 2)
 res6: Option[Int] = Some(4)
 
-scala> Option(2).map(_ * 2).map(_ + 3).map(_ toString).map(_ + "!!"))
+scala> Option(2).map(_ * 2).map(_ + 3).map(_ toString).map(_ + "!!")
 res7: Option[String] = Some(7!!!!)
 
 scala> None.map(_ * 2).map(_ + 3).map(_ toString).map(_ + "!!")
