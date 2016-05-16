@@ -3,6 +3,7 @@
 | \bwith Nathan Dotz
 
 
+https://git.io/oscon16-scala
 
 :bird:   \ctwitter:  @nathandotz
 :octopus:   \mgithub:   @sleepynate
@@ -24,6 +25,7 @@ Go to \chttp://www.scala-sbt.org/download.html\s and follow the instructions
 
 - Manual?
 > Download the \y.zip\s and execute \ybin/sbt\s or \ybin/sbt.sh\s
+> http://172.16.0.20/oscon/DotzNathan/
 ---
 | \*\gDoes it work?
 

@@ -3,6 +3,7 @@
 | \bwith Nathan Dotz
 
 
+https://git.io/oscon16-scala
 
 :bird:   \ctwitter:  @nathandotz
 :octopus:   \mgithub:   @sleepynate
