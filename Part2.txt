@@ -1,6 +1,6 @@
 | \*\gScala: The Swiss Army Language
 
-| \bwith Nathan Dotz
+| \cwith Nathan Dotz
 
 
 https://git.io/oscon16-scala
