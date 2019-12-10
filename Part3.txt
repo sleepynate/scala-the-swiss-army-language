@@ -306,7 +306,7 @@ res4: Int = 888
 | \*\gHigher-order functions and types
 
 ```
-def zipWith[A,B,C](left:List[A], right:List[B], f: A => B => C)
+def zipWith[A,B,C](left:List[A], right:List[B], f: (A, B) => C)
 ```
 ---
 | \*\gHigher-order functions and types
